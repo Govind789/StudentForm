@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background-color: #f2f2f2;
+        }
+        h2 {
+            text-align: center;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 500px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 4px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            margin-top: 15px;
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .student-list {
+            width: 90%;
+            margin: 30px auto;
+            border-collapse: collapse;
+        }
+        .student-list th, .student-list td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .student-list th {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h2>Student Management</h2>
+    <form id="studentForm">
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" name="fullName" >
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" >
+
+        <label for="phoneNumber">Phone Number</label>
+        <input type="text" id="phoneNumber" name="phoneNumber" >
+
+        <label for="address">Address</label>
+        <textarea id="address" name="address" rows="3"></textarea>
+
+        <label for="dob">Date of Birth</label>
+        <input type="date" id="dob" name="dob">
+
+        <label for="gender">Gender</label>
+        <select id="gender" name="gender">
+            <option value="">Select Gender</option>
+        </select>
+
+        <label for="qualification">Qualification</label>
+        <select id="qualification" name="qualification">
+            <option value="">Select Qualification</option>
+        </select>
+
+        <label for="modeOfStudy">Mode of Study</label>
+        <select id="modeOfStudy" name="modeOfStudy">
+            <option value="">Select Mode</option>
+        </select>
+
+        <label for="courseStartDate">Course Start Date</label>
+        <input type="date" id="courseStartDate" name="courseStartDate">
+
+        <button type="submit">Save Student</button>
+    </form>
+
+    <table class="student-list" id="studentList">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Gender</th>
+                <th>Qualification</th>
+                <th>Mode</th>
+                <th>Course Start</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Student records will be inserted here dynamically -->
+        </tbody>
+    </table>
+</body>
+<script>
+const form = document.getElementById('studentForm');
+
+window.onload = () => {
+    loadDropdowns();
+    loadStudents();
+};
+
+
+async function loadStudents() {
+    try {
+        const res = await fetch("http://localhost:5212/api/student/GetAllStudents");
+        const students = await res.json();
+
+        const tbody = document.getElementById("studentList").querySelector("tbody");
+        tbody.innerHTML = ""; // clear existing rows
+
+        students.forEach(s => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${s.id}</td>
+                <td>${s.fullName}</td>
+                <td>${s.email}</td>
+                <td>${s.phone}</td>
+                <td>${s.gender}</td>
+                <td>${s.qualification}</td>
+                <td>${s.mode}</td>
+                <td>${s.startDate}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    } catch (err) {
+        console.error("Error loading students:", err);
+    }
+}
+
+
+// Load dropdowns from backend
+async function loadDropdowns() {
+    try {
+        // Load Genders
+        let res = await fetch("http://localhost:5212/api/student/GetGenders");
+        let genders = await res.json();
+        // console.log(genders)
+        const genderSelect = document.getElementById("gender");
+        genders.forEach(g => {
+            let opt = document.createElement("option");
+            opt.value = g.genderId;    // int id
+            opt.textContent = g.gender;
+            genderSelect.appendChild(opt);
+        });
+
+        // Load Qualifications
+        res = await fetch("http://localhost:5212/api/student/getqualifications");
+        let qualifications = await res.json();
+        const qSelect = document.getElementById("qualification");
+        qualifications.forEach(q => {
+            let opt = document.createElement("option");
+            opt.value = q.qualificationId;   // int id
+            opt.textContent = q.qualification;
+            qSelect.appendChild(opt);
+        });
+
+        // Load Modes
+        res = await fetch("http://localhost:5212/api/student/getmodes");
+        let modes = await res.json();
+        const modeSelect = document.getElementById("modeOfStudy");
+        modes.forEach(m => {
+            let opt = document.createElement("option");
+            opt.value = m.modeId;   // int id
+            opt.textContent = m.mode;
+            modeSelect.appendChild(opt);
+        });
+
+    } catch (err) {
+        console.error("Error loading dropdowns:", err);
+    }
+}
+
+// Submit student form
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const data = {
+        fullName: form.fullName.value,
+        email: form.email.value,
+        phoneNumber: form.phoneNumber.value,
+        address: form.address.value,
+        dateOfBirth: form.dob.value,
+        genderId: parseInt(form.gender.value),
+        qualificationId: parseInt(form.qualification.value),
+        modeId: parseInt(form.modeOfStudy.value),
+        courseStartDate: form.courseStartDate.value
+    };
+
+    // console.log("Sending student:", data);
+
+    try {
+        const response = await fetch('http://localhost:5212/api/student/addstudent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            // backend returned error (e.g. RAISE_APPLICATION_ERROR)
+            alert("Error: " + (result.oracleErrorMessage || result.error || "Unknown error"));
+            return;
+        }
+
+        alert('Student Saved! ID: ' + result.studentId);
+        loadStudents();
+    } catch (err) {
+        alert("Request failed: " + err.message);
+        console.log(err.message)
+    }
+});
+</script>
+
+</html>
