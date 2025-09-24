@@ -1,240 +1,483 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Student Management</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 30px;
-            background-color: #f2f2f2;
+        :root {
+            --bg: #f5f7fa;
+            --card: #ffffff;
+            --brand: #2563eb;
+            --brand-hover: #1d4ed8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --row-alt: #fafafa;
+            --row-hover: #f0f7ff;
+            --chip: #eef2ff;
         }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            margin: 24px;
+            background-color: var(--bg);
+            color: var(--text);
+        }
+
         h2 {
             text-align: center;
+            margin-bottom: 18px;
+            font-weight: 700;
+            letter-spacing: .2px;
         }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 520px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 1080px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
         form {
-            background-color: #fff;
+            background: var(--card);
             padding: 20px;
-            border-radius: 8px;
-            width: 500px;
-            margin: auto;
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            border-radius: 12px;
+            box-shadow: 0 6px 24px rgba(16, 24, 40, .06);
+            border: 1px solid var(--border);
         }
+
         label {
             display: block;
             margin-top: 10px;
+            font-size: .92rem;
+            color: var(--muted);
         }
-        input, select, textarea {
+
+        input,
+        select,
+        textarea {
             width: 100%;
-            padding: 8px;
-            margin-top: 4px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
+            padding: 10px 12px;
+            margin-top: 6px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: #fff;
+            outline: none;
+            transition: border-color .15s ease, box-shadow .15s ease;
         }
-        button {
-            margin-top: 15px;
-            padding: 10px 15px;
-            background-color: #4CAF50;
-            color: white;
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--brand);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 14px;
+            padding: 10px 14px;
+            background-color: var(--brand);
+            color: #fff;
             border: none;
-            border-radius: 4px;
+            border-radius: 999px;
             cursor: pointer;
+            font-weight: 600;
+            letter-spacing: .2px;
+            transition: background-color .15s ease, transform .02s ease;
         }
-        button:hover {
-            background-color: #45a049;
+
+        .btn:hover {
+            background-color: var(--brand-hover);
         }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger-hover);
+        }
+
+        .table-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 6px 24px rgba(16, 24, 40, .06);
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            background: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
         .student-list {
-            width: 90%;
-            margin: 30px auto;
-            border-collapse: collapse;
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
         }
-        .student-list th, .student-list td {
-            border: 1px solid #ddd;
-            padding: 8px;
+
+        .student-list th,
+        .student-list td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: .95rem;
+            vertical-align: middle;
         }
-        .student-list th {
-            background-color: #4CAF50;
-            color: white;
+
+        .student-list thead th {
+            position: sticky;
+            top: 48px;
+            /* below .table-header */
+            background: #fff;
+            z-index: 1;
+            text-align: left;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        .student-list tbody tr:nth-child(odd) {
+            background: var(--row-alt);
+        }
+
+        .student-list tbody tr:hover {
+            background: var(--row-hover);
+        }
+
+        .col-actions {
+            width: 110px;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .chip {
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: var(--chip);
+            color: #3730a3;
+            font-weight: 600;
+            font-size: .82rem;
+            display: inline-block;
+        }
+
+        .helper {
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: .85rem;
+        }
+
+        .actions-inline {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(239, 68, 68, .06);
+        }
+
+        .empty {
+            padding: 18px;
+            color: var(--muted);
+            text-align: center;
         }
     </style>
 </head>
+
 <body>
     <h2>Student Management</h2>
-    <form id="studentForm">
-        <label for="fullName">Full Name</label>
-        <input type="text" id="fullName" name="fullName" >
 
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" >
+    <div class="layout">
+        <!-- Left: Form -->
+        <form id="studentForm" autocomplete="on">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" name="fullName" />
 
-        <label for="phoneNumber">Phone Number</label>
-        <input type="text" id="phoneNumber" name="phoneNumber" >
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" />
 
-        <label for="address">Address</label>
-        <textarea id="address" name="address" rows="3"></textarea>
+            <label for="phoneNumber">Phone Number</label>
+            <input type="text" id="phoneNumber" name="phoneNumber" />
 
-        <label for="dob">Date of Birth</label>
-        <input type="date" id="dob" name="dob">
+            <label for="address">Address</label>
+            <textarea id="address" name="address" rows="3"></textarea>
 
-        <label for="gender">Gender</label>
-        <select id="gender" name="gender">
-            <option value="">Select Gender</option>
-        </select>
+            <label for="dob">Date of Birth</label>
+            <input type="date" id="dob" name="dob" />
 
-        <label for="qualification">Qualification</label>
-        <select id="qualification" name="qualification">
-            <option value="">Select Qualification</option>
-        </select>
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender">
+                <option value="">Select Gender</option>
+            </select>
 
-        <label for="modeOfStudy">Mode of Study</label>
-        <select id="modeOfStudy" name="modeOfStudy">
-            <option value="">Select Mode</option>
-        </select>
+            <label for="qualification">Qualification</label>
+            <select id="qualification" name="qualification">
+                <option value="">Select Qualification</option>
+            </select>
 
-        <label for="courseStartDate">Course Start Date</label>
-        <input type="date" id="courseStartDate" name="courseStartDate">
+            <label for="modeOfStudy">Mode of Study</label>
+            <select id="modeOfStudy" name="modeOfStudy">
+                <option value="">Select Mode</option>
+            </select>
 
-        <button type="submit">Save Student</button>
-    </form>
+            <label for="courseStartDate">Course Start Date</label>
+            <input type="date" id="courseStartDate" name="courseStartDate" />
 
-    <table class="student-list" id="studentList">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Full Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Gender</th>
-                <th>Qualification</th>
-                <th>Mode</th>
-                <th>Course Start</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Student records will be inserted here dynamically -->
-        </tbody>
-    </table>
-</body>
-<script>
-const form = document.getElementById('studentForm');
+            <button type="submit" class="btn">Save Student</button>
+            <div class="helper">Use the table on the right to manage existing students.</div>
+        </form>
 
-window.onload = () => {
-    loadDropdowns();
-    loadStudents();
-};
+        <!-- Right: Table -->
+        <div class="table-card">
+            <div class="table-header">
+                <div>
+                    <strong>Students</strong>
+                </div>
+            </div>
 
+            <table class="student-list" id="studentList">
+                <thead>
+                    <tr>
+                        <th style="width:64px">ID</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th style="width:120px">Phone</th>
+                        <th style="width:110px">Gender</th>
+                        <th>Qualification</th>
+                        <th style="width:110px">Mode</th>
+                        <th style="width:130px">Course Start</th>
+                        <th class="col-actions">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows injected here -->
+                </tbody>
+            </table>
+            <div id="emptyState" class="empty" style="display:none;">No students found.</div>
+        </div>
+    </div>
 
-async function loadStudents() {
-    try {
-        const res = await fetch("http://localhost:5212/api/student/GetAllStudents");
-        const students = await res.json();
+    <script>
+        const form = document.getElementById('studentForm');
+        const tbody = document.getElementById('studentList').querySelector('tbody');
+        const emptyState = document.getElementById('emptyState');
 
-        const tbody = document.getElementById("studentList").querySelector("tbody");
-        tbody.innerHTML = ""; // clear existing rows
+        // Adjust if your backend route differs:
+        const API = {
+            list: 'http://localhost:5212/api/student/GetAllStudents',
+            add: 'http://localhost:5212/api/student/addstudent',
+            // Example delete route; if your API expects a different route or body, update here:
+            delete: `http://localhost:5212/api/student/deletestudent`
+        };
 
-        students.forEach(s => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td>${s.id}</td>
-                <td>${s.fullName}</td>
-                <td>${s.email}</td>
-                <td>${s.phone}</td>
-                <td>${s.gender}</td>
-                <td>${s.qualification}</td>
-                <td>${s.mode}</td>
-                <td>${s.startDate}</td>
-            `;
-            tbody.appendChild(tr);
-        });
-    } catch (err) {
-        console.error("Error loading students:", err);
-    }
-}
+        window.onload = () => {
+            loadDropdowns();
+            loadStudents();
+        };
 
+        // Render helpers
+        function renderRows(students) {
+            tbody.innerHTML = '';
+            if (!students || students.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+            emptyState.style.display = 'none';
 
-// Load dropdowns from backend
-async function loadDropdowns() {
-    try {
-        // Load Genders
-        let res = await fetch("http://localhost:5212/api/student/GetGenders");
-        let genders = await res.json();
-        // console.log(genders)
-        const genderSelect = document.getElementById("gender");
-        genders.forEach(g => {
-            let opt = document.createElement("option");
-            opt.value = g.genderId;    // int id
-            opt.textContent = g.gender;
-            genderSelect.appendChild(opt);
-        });
+            students.forEach(s => {
+                const tr = document.createElement('tr');
+                tr.dataset.id = s.id;
 
-        // Load Qualifications
-        res = await fetch("http://localhost:5212/api/student/getqualifications");
-        let qualifications = await res.json();
-        const qSelect = document.getElementById("qualification");
-        qualifications.forEach(q => {
-            let opt = document.createElement("option");
-            opt.value = q.qualificationId;   // int id
-            opt.textContent = q.qualification;
-            qSelect.appendChild(opt);
-        });
+                // Normalize field names for table display without breaking your model
+                const phoneDisplay = s.phone ?? s.phoneNumber ?? '';
+                const modeDisplay = s.mode ?? s.modeName ?? '';
+                const qualDisplay = s.qualification ?? s.qualificationName ?? '';
+                const genderDisplay = s.gender ?? s.genderName ?? '';
+                const startDateDisplay = s.startDate ?? s.courseStartDate ?? '';
 
-        // Load Modes
-        res = await fetch("http://localhost:5212/api/student/getmodes");
-        let modes = await res.json();
-        const modeSelect = document.getElementById("modeOfStudy");
-        modes.forEach(m => {
-            let opt = document.createElement("option");
-            opt.value = m.modeId;   // int id
-            opt.textContent = m.mode;
-            modeSelect.appendChild(opt);
-        });
-
-    } catch (err) {
-        console.error("Error loading dropdowns:", err);
-    }
-}
-
-// Submit student form
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const data = {
-        fullName: form.fullName.value,
-        email: form.email.value,
-        phoneNumber: form.phoneNumber.value,
-        address: form.address.value,
-        dateOfBirth: form.dob.value,
-        genderId: parseInt(form.gender.value),
-        qualificationId: parseInt(form.qualification.value),
-        modeId: parseInt(form.modeOfStudy.value),
-        courseStartDate: form.courseStartDate.value
-    };
-
-    // console.log("Sending student:", data);
-
-    try {
-        const response = await fetch('http://localhost:5212/api/student/addstudent', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json'},
-            body: JSON.stringify(data)
-        });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-            // backend returned error (e.g. RAISE_APPLICATION_ERROR)
-            alert("Error: " + (result.oracleErrorMessage || result.error || "Unknown error"));
-            return;
+                tr.innerHTML = `
+      <td>${s.id}</td>
+      <td>${s.fullName}</td>
+      <td>${s.email}</td>
+      <td>${phoneDisplay}</td>
+      <td><span class="chip">${genderDisplay || '-'}</span></td>
+      <td>${qualDisplay}</td>
+      <td>${modeDisplay}</td>
+      <td>${startDateDisplay}</td>
+      <td class="col-actions">
+        <div class="actions-inline">
+          <button type="button" class="btn btn-ghost btn-delete" aria-label="Delete student ${s.fullName}">
+            Delete
+          </button>
+        </div>
+      </td>
+    `;
+                tbody.appendChild(tr);
+            });
         }
 
-        alert('Student Saved! ID: ' + result.studentId);
-        loadStudents();
-    } catch (err) {
-        alert("Request failed: " + err.message);
-        console.log(err.message)
-    }
-});
-</script>
+        // Load all students
+        async function loadStudents() {
+            try {
+                const res = await fetch(API.list);
+                const students = await res.json();
+                renderRows(students);
+            } catch (err) {
+                console.error('Error loading students:', err);
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+            }
+        }
+
+        // Event delegation for Actions (Delete)
+        tbody.addEventListener('click', async (e) => {
+            const btn = e.target.closest('.btn-delete');
+            if (!btn) return;
+
+            const row = e.target.closest('tr');
+            const id = row?.dataset?.id;
+            if (!id) return;
+
+            // Accessible confirmation (simple pattern)
+            const ok = confirm('Delete this student? This action cannot be undone.');
+            // For full accessibility, prefer an ARIA alertdialog/modal component.
+            if (!ok) return;
+
+            try {
+                console.log(id);
+                const res = await fetch(API.delete, {
+                    method: 'DELETE', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: Number(id) })
+                });
+                // Many REST APIs return 200/204 on success for DELETE
+                if (res.ok) {
+                    // Remove row immediately for snappy UX
+                    row.remove();
+                    // If table is empty, show empty state
+                    if (!tbody.querySelector('tr')) emptyState.style.display = 'block';
+                } else {
+                    const errText = await res.text().catch(() => '');
+                    alert('Delete failed: ' + (errText || res.status));
+                }
+            } catch (err) {
+                alert('Request failed: ' + err.message);
+            }
+        });
+
+        // Load dropdowns from backend
+        async function loadDropdowns() {
+            try {
+                // Genders
+                let res = await fetch('http://localhost:5212/api/student/GetGenders');
+                let genders = await res.json();
+                const genderSelect = document.getElementById('gender');
+                genders.forEach(g => {
+                    const opt = document.createElement('option');
+                    opt.value = g.genderId;
+                    opt.textContent = g.gender;
+                    genderSelect.appendChild(opt);
+                });
+
+                // Qualifications
+                res = await fetch('http://localhost:5212/api/student/getqualifications');
+                let qualifications = await res.json();
+                const qSelect = document.getElementById('qualification');
+                qualifications.forEach(q => {
+                    const opt = document.createElement('option');
+                    opt.value = q.qualificationId;
+                    opt.textContent = q.qualification;
+                    qSelect.appendChild(opt);
+                });
+
+                // Modes
+                res = await fetch('http://localhost:5212/api/student/getmodes');
+                let modes = await res.json();
+                const modeSelect = document.getElementById('modeOfStudy');
+                modes.forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = m.modeId;
+                    opt.textContent = m.mode;
+                    modeSelect.appendChild(opt);
+                });
+            } catch (err) {
+                console.error('Error loading dropdowns:', err);
+            }
+        }
+
+        // Submit student form
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const data = {
+                fullName: form.fullName.value,
+                email: form.email.value,
+                phoneNumber: form.phoneNumber.value,
+                address: form.address.value,
+                dateOfBirth: form.dob.value,
+                genderId: parseInt(form.gender.value),
+                qualificationId: parseInt(form.qualification.value),
+                modeId: parseInt(form.modeOfStudy.value),
+                courseStartDate: form.courseStartDate.value
+            };
+
+            try {
+                const response = await fetch(API.add, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    alert('Error: ' + (result.oracleErrorMessage || result.error || 'Unknown error'));
+                    return;
+                }
+
+                alert('Student Saved! ID: ' + (result.studentId ?? ''));
+                loadStudents();
+                form.reset();
+            } catch (err) {
+                alert('Request failed: ' + err.message);
+            }
+        });
+    </script>
+</body>
 
 </html>

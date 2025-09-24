@@ -166,9 +166,47 @@ namespace ProjectRoot.Controllers
 
             }
         }
+
+
+        [HttpDelete("deletestudent")]
+        public IActionResult DeleteStudent([FromBody] DeleteStudentRequest req)
+        {
+            if (req == null || req.Id == null)
+                return BadRequest(new { error = "Id is required." });
+
+            using var conn = new OracleConnection(connectionString);
+            using var cmd = new OracleCommand("STUDENT_PKG.DELETE_STUDENT", conn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            cmd.Parameters.Add("P_S_ID", OracleDbType.Int32).Value = req.Id;
+
+            try
+            {
+                conn.Open();
+                var rows = cmd.ExecuteNonQuery();
+
+                // Many Oracle stored procedures won’t return affected rows; assume success if no exception
+                return Ok(new { message = $"Student with id {req.Id} deleted", id = req.Id });
+            }
+            catch (OracleException oex)
+            {
+                // Map Oracle errors appropriately if needed
+                return StatusCode(400, new { OracleErrorCode = oex.Number, OracleErrorMessage = oex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        public class DeleteStudentRequest
+        {
+            public int? Id { get; set; }
+        }
+
     }
-
-
     public class Student
     {
         public required string FullName { get; set; }

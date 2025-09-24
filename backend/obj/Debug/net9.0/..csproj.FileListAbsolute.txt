@@ -86,3 +86,4 @@ C:\Users\hp\Desktop\govind\ProjectRoot\backend\obj\Debug\net9.0\refint\..dll
 C:\Users\hp\Desktop\govind\ProjectRoot\backend\obj\Debug\net9.0\..pdb
 C:\Users\hp\Desktop\govind\ProjectRoot\backend\obj\Debug\net9.0\..genruntimeconfig.cache
 C:\Users\hp\Desktop\govind\ProjectRoot\backend\obj\Debug\net9.0\ref\..dll
+C:\Users\hp\Desktop\govind\ProjectRoot\backend\obj\Debug\net9.0\..sourcelink.json
